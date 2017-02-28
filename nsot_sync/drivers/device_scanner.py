@@ -1,5 +1,4 @@
 import logging
-import os
 from pynsot.client import get_api_client
 from pynsot.vendor.slumber.exceptions import HttpClientError
 from requests.exceptions import ConnectionError

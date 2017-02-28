@@ -21,7 +21,6 @@ setup(
         'pynsot==1.0',
         'netifaces==0.10.4',
         'coloredlogs==5.0',
-        'netmiko==1.2.8'
     ],
     extras_require={
         'docs': ['sphinx', 'sphinx-autobuild', 'sphinx-rtd-theme'],
