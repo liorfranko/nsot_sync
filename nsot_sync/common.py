@@ -112,7 +112,9 @@ def get_hostname(device, hostname, logger):
         else:
             return hostname.split('#')[0]
     elif 'f5_ltm' in device['device_type']:
-        return hostname.split('@')[1].split('(')[1].split(')')[0]
+        hostname = hostname.split('@')[1].split('(')[1].split(')')[0]
+        logger.debug('The final hostname is: %s', hostname)
+        return hostname
     else:
         logger.warning('device_type unknown - %s', device['device_type'])
         return None
@@ -121,6 +123,7 @@ def get_hostname(device, hostname, logger):
 def find_device_in_ipam(ip, devices, logger):
     """
     Find a device by IP address attribute in the list of devices.
+    :param logger: The logger.
     :param ip: The IP address.
     :param devices: The list of NSoT devices.
     :return: The device.

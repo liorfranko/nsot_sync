@@ -123,7 +123,6 @@ class DeviceScannerDriver(BaseDriver):
         except KeyboardInterrupt:
             self.exit_app = True
             raise
-        print (self.devices_to_update)
         return {
             'networks': [],
             'interfaces': [],
