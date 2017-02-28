@@ -1,6 +1,6 @@
 from __future__ import print_function
 import click
-from ..drivers import device_scanner
+from nsot_sync.drivers import device_scanner
 
 
 @click.command()

@@ -1,6 +1,6 @@
 from __future__ import print_function
 import click
-from ..drivers import ip_scanner
+from nsot_sync.drivers import ip_scanner
 
 __author__ = 'Lior Franko'
 __maintainer__ = 'Lior Franko'

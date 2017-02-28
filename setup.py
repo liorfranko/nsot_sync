@@ -10,7 +10,8 @@ setup(
     description="CLI/Driver-based framework to sync resources to NSoT (IPAM)",
     author='Codey Oxley',
     author_email='codey.a.oxley+os@gmail.com',
-    url='https://github.com/coxley/nsot_sync',
+    url='https://github.com/liorfranko/nsot_sync',
+    # url='https://github.com/coxley/nsot_sync',
     keywords=['networking', 'ipam', 'nsot', 'cmdb', 'sync', 'orion',
               'solarwinds', 'infoblox', 'ip', 'address'],
     classifiers=[],
@@ -20,6 +21,7 @@ setup(
         'pynsot==1.0',
         'netifaces==0.10.4',
         'coloredlogs==5.0',
+        'netmiko==1.2.8'
     ],
     extras_require={
         'docs': ['sphinx', 'sphinx-autobuild', 'sphinx-rtd-theme'],

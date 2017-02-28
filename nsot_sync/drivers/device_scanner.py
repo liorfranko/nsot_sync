@@ -5,8 +5,7 @@ from pynsot.vendor.slumber.exceptions import HttpClientError
 from requests.exceptions import ConnectionError
 import ipaddress
 import concurrent.futures
-# from nsot_sync.common import *
-from common import * # FIXME !!!!
+from nsot_sync.common import check_icmp, get_hostname, find_device_in_ipam
 from netmiko import ConnectHandler
 from netmiko.ssh_exception import NetMikoTimeoutException, NetMikoAuthenticationException
 from netmiko.snmp_autodetect import SNMPDetect

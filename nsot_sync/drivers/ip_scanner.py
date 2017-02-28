@@ -5,7 +5,7 @@ import concurrent.futures
 import time
 import datetime
 import logging
-from common import find_host_in_network, resolve_host, check_icmp, info, success # FIXME !!!!
+from nsot_sync.common import find_host_in_network, resolve_host, check_icmp
 from requests.exceptions import ConnectionError
 from pynsot.vendor.slumber.exceptions import HttpClientError
 import os
