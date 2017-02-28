@@ -104,10 +104,13 @@ class DeviceScannerDriver(BaseDriver):
             self.devices = self.c.sites(self.site_id).devices.get()
         except ConnectionError:
             self.click_ctx.fail('Cannot connect to NSoT server')
+            raise
         except HttpClientError as e:
             self.handle_pynsot_err(e)
+            raise
         except Exception:
             self.logger.exception('DeviceScannerDriver, checking for existing net')
+            raise
 
     def get_resources(self):  # -> Dict[string, list]
         """
