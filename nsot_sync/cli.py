@@ -125,3 +125,7 @@ def cli(ctx,
 def main():
     '''Setuptools entrypoint, only used to call Click entrypoint'''
     cli(obj={})  # obj is for sharing things between click contexts
+
+
+if __name__ == "__main__":
+    main()

@@ -1,5 +1,5 @@
 from __future__ import print_function
-from nsot_sync.drivers.base_driver import BaseDriver
+from base_driver import BaseDriver
 import socket
 import platform
 import netifaces

@@ -1,6 +1,6 @@
 from __future__ import print_function
 import click
-from nsot_sync.drivers import simple
+from ..drivers import simple
 from nsot_sync.common import validate_csv
 
 
