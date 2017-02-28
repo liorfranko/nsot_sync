@@ -95,21 +95,24 @@ class IpScannerDriver(BaseDriver):
 
         try:
             self.logger.info('Getting networks for site: %s', self.site_id)
-            # self.networks = self.c.sites(self.site_id).networks.get()
-            import json
+            self.networks = self.c.sites(self.site_id).networks.get()
+            # import json
             # from pprint import pprint
 
-            with open('/Users/liorf/Dropbox/Work/Liveperson/Code/python/nsot_networks.json') as data_file:
-                self.networks = json.load(data_file)
+            # with open('/Users/liorf/Dropbox/Work/Liveperson/Code/python/nsot_networks.json') as data_file:
+            #     self.networks = json.load(data_file)
             # pprint(self.networks)
             # print(json.dumps(self.networks, sort_keys=True, indent=4))
             # exit()
         except ConnectionError:
             self.click_ctx.fail('Cannot connect to NSoT server')
+            raise
         except HttpClientError as e:
             self.handle_pynsot_err(e)
+            raise
         except Exception:
-            self.logger.exception('IpScannerDriver, getting existing net')
+            self.logger.exception('IpScannerDriver, getting existing networks.')
+            raise
 
     def get_resources(self):  # -> Dict[string, list]
         """

@@ -84,7 +84,7 @@ class DeviceScannerDriver(BaseDriver):
         self.max_threads = max_threads
         creds_mng = CredsManager(store_creds=False, name=__name__)
         self.user, self.password = creds_mng.load_creds
-        print (os.path.expanduser('~'))
+        # print (os.path.expanduser('~'))
         try:
             self.logger.info('Getting networks for site: %s', self.site_id)
             self.networks = self.c.sites(self.site_id).networks.get()
@@ -109,7 +109,7 @@ class DeviceScannerDriver(BaseDriver):
             self.handle_pynsot_err(e)
             raise
         except Exception:
-            self.logger.exception('DeviceScannerDriver, checking for existing net')
+            self.logger.exception('DeviceScannerDriver, Getting networks and devices.')
             raise
 
     def get_resources(self):  # -> Dict[string, list]
