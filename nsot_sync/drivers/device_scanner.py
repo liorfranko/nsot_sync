@@ -75,8 +75,6 @@ class DeviceScannerDriver(BaseDriver):
             'required': False,
         },
     ]
-    # SNMP_COMMUNITY = 'c+3th#P$un5h_raP'
-    # SNMP_VERSION = 'v2c'
 
     def __init__(self, max_threads, scan_vlan, snmp_community, snmp_version,  *args, **kwargs):
         super(DeviceScannerDriver, self).__init__(*args, **kwargs)
@@ -85,14 +83,12 @@ class DeviceScannerDriver(BaseDriver):
         self.c = get_api_client()
         self.devices_to_update = []
         self.exit_app = False
-        # print (scan_vlan)
         self.scan_vlan = scan_vlan
         self.snmp_community = snmp_community
         self.snmp_version = snmp_version
         self.max_threads = max_threads
         creds_mng = CredsManager(store_creds=False, name=__name__)
         self.user, self.password = creds_mng.load_creds
-        # print (os.path.expanduser('~'))
         try:
             self.logger.info('Getting networks for site: %s', self.site_id)
             self.networks = self.c.sites(self.site_id).networks.get()

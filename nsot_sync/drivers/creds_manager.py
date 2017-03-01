@@ -60,8 +60,6 @@ class CredsManager:
                     user = f.readline().strip()
                     password = base64.b64decode(f.readline().strip())
                 f.close()
-                logging.info('TESTTTT')
-                print (user, password)
                 return user, password
             else:
                 logging.info('No user found in cache')
