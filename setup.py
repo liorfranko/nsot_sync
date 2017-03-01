@@ -4,7 +4,6 @@ from setuptools import setup, find_packages
 
 VERSION = '0.5.1'
 
-
 setup(
     name='nsot_sync',
     version=VERSION,

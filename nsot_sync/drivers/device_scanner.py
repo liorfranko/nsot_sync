@@ -61,6 +61,13 @@ class DeviceScannerDriver(BaseDriver):
             'required': False,
         },
         {
+            'name': 'vlan',
+            'resource_name': 'Network',
+            'description': 'The vlan id of the network',
+            'display': True,
+            'required': False,
+        },
+        {
             'name': 'last_reachable',
             'resource_name': 'Device',
             'description': 'The time stap of the last successful scan',
