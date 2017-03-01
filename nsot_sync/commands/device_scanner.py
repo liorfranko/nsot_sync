@@ -22,7 +22,7 @@ def cli(ctx, max_threads, scan_vlan, snmp_community, snmp_version, update_creds)
         scan_vlan=scan_vlan,
         snmp_community=snmp_community,
         snmp_version=snmp_version,
-        update_creds=update_creds
+        # update_creds=update_creds
     )
     if ctx.obj['NOOP']:
         driver.noop()
