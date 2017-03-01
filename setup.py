@@ -8,7 +8,7 @@ setup(
     name='nsot_sync',
     version=VERSION,
     description="CLI/Driver-based framework to sync resources to NSoT (IPAM)",
-    py_modules=['nsot_sync'],
+
     author='Codey Oxley',
     author_email='codey.a.oxley+os@gmail.com',
     url='https://github.com/liorfranko/nsot_sync',
