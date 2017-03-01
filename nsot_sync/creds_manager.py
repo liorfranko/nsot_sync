@@ -57,11 +57,11 @@ class CredsManager:
                 user = raw_input('Enter Username: ')
                 if user == "":
                     logging.info('No username given')
-                    raise Exception("Error: No username given")
+                    raise Exception("No username given")
                 password = getpass.getpass()
                 if password == "":
                     logger.info('No password given')
-                    raise Exception("Error: No password given")
+                    raise Exception("No password given")
                 with open(self.creds_filename, 'w') as f:
                     f.write(user + "\n")
                     f.write(base64.b64encode(password))
