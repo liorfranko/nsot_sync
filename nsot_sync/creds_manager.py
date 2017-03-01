@@ -2,6 +2,7 @@ import logging
 import getpass
 import base64
 import os.path
+import logging
 __author__ = 'liorf'
 
 
@@ -10,6 +11,7 @@ class CredsManager:
     This class needs to get the filename of the credentials and a flag update_creds, if not set will be False.
     """
     def __init__(self, **kwargs):
+        self.logger = logging.getLogger(__name__)
         self.update_creds = False
         self.creds_filename = ''
         if kwargs is not None:
@@ -22,6 +24,7 @@ class CredsManager:
             raise Exception('Error: kwargs is None')
         self.creds_filename = os.path.normpath(os.path.expanduser('~') + '/' + self.creds_filename + '.dat')
 
+
     @property
     def load_creds(self):
         """
@@ -32,12 +35,12 @@ class CredsManager:
         if self.update_creds:
             user = raw_input('Enter Username: ')
             if user == "":
-                logging.info('No username given')
-                raise Exception("Error: No username given")
+                self.logger.info('No username given')
+                raise Exception("No username given")
             password = getpass.getpass()
             if password == "":
-                logging.info('No password given')
-                raise Exception("Error: No password given")
+                self.logger.info('No password given')
+                raise Exception("No password given")
             with open(self.creds_filename, 'w') as f:
                 f.write(user + "\n")
                 f.write(base64.b64encode(password))
@@ -51,14 +54,14 @@ class CredsManager:
                 f.close()
                 return user, password
             else:
-                logging.info('No user found in cache')
+                self.logger.info('No user found in cache')
                 user = raw_input('Enter Username: ')
                 if user == "":
                     logging.info('No username given')
                     raise Exception("Error: No username given")
                 password = getpass.getpass()
                 if password == "":
-                    logging.info('No password given')
+                    self.logger.info('No password given')
                     raise Exception("Error: No password given")
                 with open(self.creds_filename, 'w') as f:
                     f.write(user + "\n")
