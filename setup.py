@@ -30,6 +30,6 @@ setup(
     setup_requires=['pytest-runner'],
     entry_points='''
         [console_scripts]
-        nsot_sync=nsot_sync:main
+        nsot_sync=nsot_sync.cli:main
     ''',
 )
