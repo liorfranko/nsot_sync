@@ -17,7 +17,7 @@ def cli(ctx, max_threads, scan_vlan):
     driver = device_scanner.DeviceScannerDriver(
         click_ctx=ctx,
         max_threads=max_threads,
-        scan_all=scan_vlan
+        scan_vlan=scan_vlan
     )
     if ctx.obj['NOOP']:
         driver.noop()
