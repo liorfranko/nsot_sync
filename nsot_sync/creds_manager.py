@@ -19,8 +19,7 @@ class CredsManager:
                 if key == 'update_creds':
                     self.update_creds = value
         else:
-            print ('Error: kwargs is None')
-            exit(1)
+            raise Exception('Error: kwargs is None')
         self.creds_filename = os.path.normpath(os.path.expanduser('~') + '/' + self.creds_filename + '.dat')
 
     @property
@@ -34,13 +33,11 @@ class CredsManager:
             user = raw_input('Enter Username: ')
             if user == "":
                 logging.info('No username given')
-                print("Error: No username given")
-                exit(1)
+                raise Exception("Error: No username given")
             password = getpass.getpass()
             if password == "":
                 logging.info('No password given')
-                print("Error: No password given")
-                exit(1)
+                raise Exception("Error: No password given")
             with open(self.creds_filename, 'w') as f:
                 f.write(user + "\n")
                 f.write(base64.b64encode(password))
@@ -58,13 +55,11 @@ class CredsManager:
                 user = raw_input('Enter Username: ')
                 if user == "":
                     logging.info('No username given')
-                    print("Error: No username given")
-                    exit(1)
+                    raise Exception("Error: No username given")
                 password = getpass.getpass()
                 if password == "":
                     logging.info('No password given')
-                    print("Error: No password given")
-                    exit(1)
+                    raise Exception("Error: No password given")
                 with open(self.creds_filename, 'w') as f:
                     f.write(user + "\n")
                     f.write(base64.b64encode(password))
