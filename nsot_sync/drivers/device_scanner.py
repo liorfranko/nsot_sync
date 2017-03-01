@@ -22,6 +22,8 @@ __email__ = 'liorfranko@gmail.com'
 
 # TODO Add creds manager as common module.
 # TODO Move common function of the two scanners to common module.
+# TODO Support SNMP v3.
+# TODO remove SNMP and Vlan from cli options to dotfile.
 
 
 class DeviceScannerDriver(BaseDriver):
@@ -161,7 +163,6 @@ class DeviceScannerDriver(BaseDriver):
             self.logger.debug('%s - The scan attribute for this network is not set to true.', full_net)
             return
         self.logger.debug('%s - The scan attribute set to true, starting to scan the network.', full_net)
-
 
         subnet = ipaddress.ip_network(u'' + full_net, strict=False)
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_threads) as executor:
