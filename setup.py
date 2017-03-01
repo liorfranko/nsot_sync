@@ -23,7 +23,8 @@ setup(
         'coloredlogs==5.0',
         'futures==3.0.5',
         'netmiko==1.2.8',
-        'pysnmp==4.3.3'
+        'pysnmp==4.3.3',
+        'paramiko==2.1.2'
     ],
     extras_require={
         'docs': ['sphinx', 'sphinx-autobuild', 'sphinx-rtd-theme'],
