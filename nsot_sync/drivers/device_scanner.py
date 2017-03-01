@@ -86,6 +86,7 @@ class DeviceScannerDriver(BaseDriver):
         self.c = get_api_client()
         self.devices_to_update = []
         self.exit_app = False
+        print (scan_vlan)
         self.scan_vlan = scan_vlan
         self.max_threads = max_threads
         creds_mng = CredsManager(store_creds=False, name=__name__)
