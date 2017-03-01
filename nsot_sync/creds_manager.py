@@ -24,9 +24,9 @@ class CredsManager:
             raise Exception('Error: kwargs is None')
 
         self.creds_filename = os.path.normpath(os.path.expanduser('~') + '/.' + self.creds_filename)
-        print (self.creds_filename)
-        print (os.path.expanduser('~'))
-        exit(0)
+        # print (self.creds_filename)
+        # print (os.path.expanduser('~'))
+        # exit(0)
 
 
     @property
