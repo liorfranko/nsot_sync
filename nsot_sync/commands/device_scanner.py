@@ -23,10 +23,10 @@ from nsot_sync.drivers import device_scanner
     help='The SNMP community for auto discovery.')
 @click.option(
     '--snmp-version',
-    default='v3c',
+    default='v2c',
     type=str,
     required=True,
-    help='The SNMP version for auto discovery.')
+    help='The SNMP version for auto discovery, option are \'v1\', \'v2c\', \'v3\'')
 @click.option('--update-creds', is_flag=True, default=False, help='Update the exiting cached credentials.')
 @click.pass_context
 def cli(ctx, max_threads, scan_vlan, snmp_community, snmp_version, update_creds):
