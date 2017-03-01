@@ -77,7 +77,7 @@ class DeviceScannerDriver(BaseDriver):
         },
     ]
 
-    def __init__(self, max_threads, scan_vlan, snmp_community, snmp_version, update_creds, *args, **kwargs):
+    def __init__(self, max_threads, scan_vlan, snmp_community, snmp_version, *args, **kwargs):
         super(DeviceScannerDriver, self).__init__(*args, **kwargs)
         self.site_id = self.click_ctx.obj['SITE_ID']
         self.logger = logging.getLogger(__name__)
@@ -87,7 +87,7 @@ class DeviceScannerDriver(BaseDriver):
         self.scan_vlan = scan_vlan
         self.snmp_community = snmp_community
         self.snmp_version = snmp_version
-        self.update_creds = update_creds
+        # self.update_creds = update_creds
         self.max_threads = max_threads
         creds_mng = CredsManager(update_creds=self.update_creds, name=__name__)
         self.user, self.password = creds_mng.load_creds
