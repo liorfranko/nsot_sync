@@ -75,11 +75,10 @@ class DeviceScannerDriver(BaseDriver):
             'required': False,
         },
     ]
-    # MGMT_VLAN = '28'
-    SNMP_COMMUNITY = 'c+3th#P$un5h_raP'
-    SNMP_VERSION = 'v2c'
+    # SNMP_COMMUNITY = 'c+3th#P$un5h_raP'
+    # SNMP_VERSION = 'v2c'
 
-    def __init__(self, max_threads, scan_vlan,  *args, **kwargs):
+    def __init__(self, max_threads, scan_vlan, snmp_community, *args, **kwargs):
         super(DeviceScannerDriver, self).__init__(*args, **kwargs)
         self.site_id = self.click_ctx.obj['SITE_ID']
         self.logger = logging.getLogger(__name__)
@@ -88,6 +87,8 @@ class DeviceScannerDriver(BaseDriver):
         self.exit_app = False
         # print (scan_vlan)
         self.scan_vlan = scan_vlan
+        self.snmp_community = snmp_community
+        self.snmp_version = snmp_version
         self.max_threads = max_threads
         creds_mng = CredsManager(store_creds=False, name=__name__)
         self.user, self.password = creds_mng.load_creds
@@ -186,7 +187,7 @@ class DeviceScannerDriver(BaseDriver):
             if not check_icmp(ip, self.logger):
                 return
             try:
-                my_snmp = SNMPDetect(hostname=str(ip), community=self.SNMP_COMMUNITY, snmp_version=self.SNMP_VERSION)
+                my_snmp = SNMPDetect(hostname=str(ip), community=self.snmp_community, snmp_version=self.snmp_version)
                 device_type = my_snmp.autodetect()
             except KeyboardInterrupt:
                 self.exit_app = True
