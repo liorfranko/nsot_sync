@@ -78,7 +78,7 @@ class DeviceScannerDriver(BaseDriver):
     # SNMP_COMMUNITY = 'c+3th#P$un5h_raP'
     # SNMP_VERSION = 'v2c'
 
-    def __init__(self, max_threads, scan_vlan, snmp_community, *args, **kwargs):
+    def __init__(self, max_threads, scan_vlan, snmp_community, snmp_version,  *args, **kwargs):
         super(DeviceScannerDriver, self).__init__(*args, **kwargs)
         self.site_id = self.click_ctx.obj['SITE_ID']
         self.logger = logging.getLogger(__name__)
