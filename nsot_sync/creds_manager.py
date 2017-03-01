@@ -25,6 +25,7 @@ class CredsManager:
 
         self.creds_filename = os.path.normpath(os.path.expanduser('~') + '/' + self.creds_filename + '.dat')
         print (self.creds_filename)
+        print (os.path.expanduser('~'))
         exit(0)
 
 
