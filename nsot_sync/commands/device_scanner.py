@@ -23,6 +23,7 @@ from nsot_sync.drivers import device_scanner
     help='The SNMP community for auto discovery.')
 @click.option(
     '--snmp-version',
+    default='v3c',
     type=str,
     required=True,
     help='The SNMP version for auto discovery.')
