@@ -75,18 +75,18 @@ class DeviceScannerDriver(BaseDriver):
             'required': False,
         },
     ]
-    MGMT_VLAN = '28'
+    # MGMT_VLAN = '28'
     SNMP_COMMUNITY = 'c+3th#P$un5h_raP'
     SNMP_VERSION = 'v2c'
 
-    def __init__(self, max_threads, scan_all, *args, **kwargs):
+    def __init__(self, max_threads, scan_vlan,  *args, **kwargs):
         super(DeviceScannerDriver, self).__init__(*args, **kwargs)
         self.site_id = self.click_ctx.obj['SITE_ID']
         self.logger = logging.getLogger(__name__)
         self.c = get_api_client()
         self.devices_to_update = []
         self.exit_app = False
-        self.scan_all = scan_all
+        self.scan_vlan = scan_vlan
         self.max_threads = max_threads
         creds_mng = CredsManager(store_creds=False, name=__name__)
         self.user, self.password = creds_mng.load_creds
@@ -159,25 +159,21 @@ class DeviceScannerDriver(BaseDriver):
             return
         logging.debug('%s - Vlan attribute exists', full_net)
 
-        if not net['attributes']['vlan'].lower() == self.MGMT_VLAN:
-            logging.debug('%s - Vlan is not %s, Skipping the scan', full_net, self.MGMT_VLAN)
+        if not net['attributes']['vlan'].lower() == self.scan_vlan:
+            logging.debug('%s - Vlan is not %s, Skipping the scan', full_net, self.scan_vlan)
             return
-        logging.debug('%s - Vlan is: ', self.MGMT_VLAN)
+        logging.debug('%s - Vlan is: ', self.scan_vlan)
 
-        if self.scan_all:
-            self.logger.debug('%s - Scan-all flag is set, skipping the other checks and scanning the network.',
-                              full_net)
-        else:
-            self.logger.debug('%s - Scan-all flag is not set, running normal checks.', full_net)
-            if 'scan' not in net['attributes']:
-                self.logger.debug('%s - Scan attribute not exists for this network, skipping the scan.', full_net)
-                return
-            self.logger.debug('%s - Scan attribute exists for this network, continue the scan.', full_net)
+        if 'scan' not in net['attributes']:
+            self.logger.debug('%s - Scan attribute not exists for this network, skipping the scan.', full_net)
+            return
+        self.logger.debug('%s - Scan attribute exists for this network, continue the scan.', full_net)
 
-            if not net['attributes']['scan'].lower() == 'true':
-                self.logger.debug('%s - The scan attribute for this network is not set to true.', full_net)
-                return
-            self.logger.debug('%s - The scan attribute set to true, starting to scan the network.', full_net)
+        if not net['attributes']['scan'].lower() == 'true':
+            self.logger.debug('%s - The scan attribute for this network is not set to true.', full_net)
+            return
+        self.logger.debug('%s - The scan attribute set to true, starting to scan the network.', full_net)
+
 
         subnet = ipaddress.ip_network(u'' + full_net, strict=False)
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_threads) as executor:

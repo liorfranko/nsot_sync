@@ -11,13 +11,13 @@ from nsot_sync.drivers import device_scanner
     type=int,
     help='Maximum threads for the network scan, default is 100.'
 )
-@click.option('--scan-all', is_flag=True, help='Scan all the networks in the site, will not change the scan attribute if exists.')
+@click.option('--scan-vlan', type=int, required=True, help='The vlan ID of the management vlan.')
 @click.pass_context
-def cli(ctx, max_threads, scan_all):
+def cli(ctx, max_threads, scan_vlan):
     driver = device_scanner.DeviceScannerDriver(
         click_ctx=ctx,
         max_threads=max_threads,
-        scan_all=scan_all
+        scan_all=scan_vlan
     )
     if ctx.obj['NOOP']:
         driver.noop()
