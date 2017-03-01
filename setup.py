@@ -8,7 +8,6 @@ setup(
     name='nsot_sync',
     version=VERSION,
     description="CLI/Driver-based framework to sync resources to NSoT (IPAM)",
-
     author='Codey Oxley',
     author_email='codey.a.oxley+os@gmail.com',
     url='https://github.com/liorfranko/nsot_sync',
@@ -31,6 +30,6 @@ setup(
     setup_requires=['pytest-runner'],
     entry_points='''
         [console_scripts]
-        nsot_sync=nsot_sync.cli:main
+        nsot_sync=nsot_sync:main
     ''',
 )
