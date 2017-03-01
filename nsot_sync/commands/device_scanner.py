@@ -13,16 +13,16 @@ from nsot_sync.drivers import device_scanner
 )
 @click.option('--scan-vlan', type=int, required=True, help='The vlan ID of the management vlan.')
 @click.option('--snmp-community', type=str, required=True, help='The SNMP community for auto discovery.')
-@click.option('--snmp-version', type=str, required=True, default='v2c', help='The SNMP version for auto discovery.')
-
+@click.option('--update-creds', is_flag=False, help='Update the exiting cached credentials.')
 @click.pass_context
-def cli(ctx, max_threads, scan_vlan, snmp_community, snmp_version):
+def cli(ctx, max_threads, scan_vlan, snmp_community, snmp_version, update_creds):
     driver = device_scanner.DeviceScannerDriver(
         click_ctx=ctx,
         max_threads=max_threads,
         scan_vlan=scan_vlan,
         snmp_community=snmp_community,
-        snmp_version=snmp_version
+        snmp_version=snmp_version,
+        update_creds=update_creds
     )
     if ctx.obj['NOOP']:
         driver.noop()

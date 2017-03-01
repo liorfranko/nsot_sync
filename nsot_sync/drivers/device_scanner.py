@@ -1,18 +1,19 @@
+import datetime
 import logging
+import time
+
+import concurrent.futures
+import ipaddress
+from netmiko import ConnectHandler
+from netmiko.snmp_autodetect import SNMPDetect
+from netmiko.ssh_exception import NetMikoTimeoutException, NetMikoAuthenticationException
 from pynsot.client import get_api_client
 from pynsot.vendor.slumber.exceptions import HttpClientError
 from requests.exceptions import ConnectionError
-import ipaddress
-import concurrent.futures
-from nsot_sync.common import check_icmp, get_hostname, find_device_in_ipam
-from netmiko import ConnectHandler
-from netmiko.ssh_exception import NetMikoTimeoutException, NetMikoAuthenticationException
-from netmiko.snmp_autodetect import SNMPDetect
-import time
-import datetime
 
 from base_driver import BaseDriver
-from creds_manager import CredsManager
+from nsot_sync.common import check_icmp, get_hostname, find_device_in_ipam
+from nsot_sync.creds_manager import CredsManager
 
 __author__ = 'Lior Franko'
 __maintainer__ = 'Lior Franko'
@@ -76,7 +77,7 @@ class DeviceScannerDriver(BaseDriver):
         },
     ]
 
-    def __init__(self, max_threads, scan_vlan, snmp_community, snmp_version,  *args, **kwargs):
+    def __init__(self, max_threads, scan_vlan, snmp_community, snmp_version, update_creds, *args, **kwargs):
         super(DeviceScannerDriver, self).__init__(*args, **kwargs)
         self.site_id = self.click_ctx.obj['SITE_ID']
         self.logger = logging.getLogger(__name__)
@@ -86,24 +87,13 @@ class DeviceScannerDriver(BaseDriver):
         self.scan_vlan = scan_vlan
         self.snmp_community = snmp_community
         self.snmp_version = snmp_version
+        self.update_creds = update_creds
         self.max_threads = max_threads
-        creds_mng = CredsManager(store_creds=False, name=__name__)
+        creds_mng = CredsManager(update_creds=self.update_creds, name=__name__)
         self.user, self.password = creds_mng.load_creds
         try:
             self.logger.info('Getting networks for site: %s', self.site_id)
             self.networks = self.c.sites(self.site_id).networks.get()
-            # import json
-            # with open('/Users/liorf/Dropbox/Work/Liveperson/Code/python/nsot_networks.json') as data_file:
-            #     self.networks = json.load(data_file)
-            # pprint(self.networks)
-            # print(json.dumps(self.networks, sort_keys=True, indent=4))
-            # exit()
-            # from pprint import pprint
-            # with open('/Users/liorf/Dropbox/Work/Liveperson/Code/python/nsot_networks.json') as data_file:
-            #     self.networks = json.load(data_file)
-            # pprint(data)
-            # exit()
-            # self.networks =
             self.logger.info('Getting devices for site: %s', self.site_id)
             self.devices = self.c.sites(self.site_id).devices.get()
         except ConnectionError:
