@@ -86,7 +86,7 @@ class DeviceScannerDriver(BaseDriver):
         self.c = get_api_client()
         self.devices_to_update = []
         self.exit_app = False
-        print (scan_vlan)
+        # print (scan_vlan)
         self.scan_vlan = scan_vlan
         self.max_threads = max_threads
         creds_mng = CredsManager(store_creds=False, name=__name__)
@@ -160,7 +160,7 @@ class DeviceScannerDriver(BaseDriver):
             return
         logging.debug('%s - Vlan attribute exists', full_net)
 
-        if not net['attributes']['vlan'].lower() == self.scan_vlan:
+        if not net['attributes']['vlan'].lower() == str(self.scan_vlan):
             logging.debug('%s - Vlan is not %s, Skipping the scan', full_net, self.scan_vlan)
             return
         logging.debug('%s - Vlan is: ', self.scan_vlan)
