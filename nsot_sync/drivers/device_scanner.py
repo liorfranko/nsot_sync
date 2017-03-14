@@ -212,15 +212,25 @@ class DeviceScannerDriver(BaseDriver):
 
                 device = find_device_in_ipam(ip, self.devices, self.logger)
                 # TODO - Add more attributes here
+                if device_type == 'arista_eos':
+                    os = 'eos'
+                elif device_type == 'cisco_ios':
+                    os = 'ios'
+                elif device_type == 'cisco_nxos':
+                    os = 'nxos'
+                else:
+                    os = 'unknown'
                 if not device:
                     self.logger.info('%s - Not exist in IPAM', ip)
-                    attributes = {'address': ip, 'last_reachable': str(st), 'device_type': device_type}
+                    attributes = {'address': ip, 'last_reachable': str(st), 'device_type': device_type, 'hostname': str(hostname), 'os': os}
                     device = {'hostname': str(hostname),
                               'attributes': attributes}
                 else:
                     self.logger.info('%s - Exist in IPAM', ip)
                     device['attributes']['device_type'] = device_type
                     device['attributes']['last_reachable'] = str(st)
+                    device['attributes']['hostname'] = str(hostname)
+                    device['attributes']['os'] = str(os)
                     device['hostname'] = hostname
                 self.devices_to_update.append(device)
             except NetMikoAuthenticationException as e:
