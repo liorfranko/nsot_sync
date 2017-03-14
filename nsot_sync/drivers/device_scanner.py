@@ -214,10 +214,9 @@ class DeviceScannerDriver(BaseDriver):
                 # TODO - Add more attributes here
                 if not device:
                     self.logger.info('%s - Not exist in IPAM', ip)
-                    attributes = {'address': ip, 'last_reachable': str(st)}
+                    attributes = {'address': ip, 'last_reachable': str(st), 'device_type': device_type}
                     device = {'hostname': str(hostname),
-                              'attributes': attributes,
-                              'device_type': device_type}
+                              'attributes': attributes}
                 else:
                     self.logger.info('%s - Exist in IPAM', ip)
                     device['attributes']['device_type'] = device_type
