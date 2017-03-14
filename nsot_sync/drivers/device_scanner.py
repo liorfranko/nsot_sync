@@ -36,9 +36,16 @@ class DeviceScannerDriver(BaseDriver):
             'required': False,
         },
         {
-            'name': 'os',
+            'name': 'napalm_os',
             'resource_name': 'Device',
-            'description': 'Operating System',
+            'description': 'Operating System saved for napalm tools.',
+            'display': True,
+            'required': False,
+        },
+        {
+            'name': 'netmiko_os',
+            'resource_name': 'Device',
+            'description': 'Operating System saved for netmiko tools.',
             'display': True,
             'required': False,
         },
@@ -74,6 +81,13 @@ class DeviceScannerDriver(BaseDriver):
             'name': 'last_reachable',
             'resource_name': 'Device',
             'description': 'The time stap of the last successful scan',
+            'display': True,
+            'required': False,
+        },
+        {
+            'name': 'hostname',
+            'resource_name': 'Device',
+            'description': 'The hostname',
             'display': True,
             'required': False,
         },
@@ -212,25 +226,26 @@ class DeviceScannerDriver(BaseDriver):
 
                 device = find_device_in_ipam(ip, self.devices, self.logger)
                 # TODO - Add more attributes here
+                # Add napalm_os
                 if device_type == 'arista_eos':
-                    os = 'eos'
+                    napalm_os = 'eos'
                 elif device_type == 'cisco_ios':
-                    os = 'ios'
+                    napalm_os = 'ios'
                 elif device_type == 'cisco_nxos':
-                    os = 'nxos'
+                    napalm_os = 'nxos'
                 else:
-                    os = 'unknown'
+                    napalm_os = 'unknown'
                 if not device:
                     self.logger.info('%s - Not exist in IPAM', ip)
-                    attributes = {'address': ip, 'last_reachable': str(st), 'device_type': device_type, 'hostname': str(hostname), 'os': os}
+                    attributes = {'address': ip, 'last_reachable': str(st), 'netmiko_os': device_type, 'hostname': str(hostname), 'napalm_os': napalm_os}
                     device = {'hostname': str(hostname),
                               'attributes': attributes}
                 else:
                     self.logger.info('%s - Exist in IPAM', ip)
-                    device['attributes']['device_type'] = device_type
+                    device['attributes']['netmiko_os'] = device_type
                     device['attributes']['last_reachable'] = str(st)
                     device['attributes']['hostname'] = str(hostname)
-                    device['attributes']['os'] = str(os)
+                    device['attributes']['napalm_os'] = str(napalm_os)
                     device['hostname'] = hostname
                 self.devices_to_update.append(device)
             except NetMikoAuthenticationException as e:
