@@ -111,6 +111,11 @@ def get_hostname(device, hostname, logger):
             return hostname.split('>')[0]
         else:
             return hostname.split('#')[0]
+    elif 'eos' in device['device_type']:
+        if '>' in hostname:
+            return hostname.split('>')[0]
+        else:
+            return hostname.split('#')[0]
     elif 'f5_ltm' in device['device_type']:
         hostname = hostname.split('@')[1].split('(')[1].split(')')[0]
         logger.debug('The final hostname is: %s', hostname)

@@ -27,7 +27,7 @@ class CredsManager:
     @property
     def load_creds(self):
         """
-        This function Checks if update_creds is set, if so the user will get the username and password prompt.
+        This function Checks if update_creds is set, if so the user will prompt with request to insert new username and password.
          If not, the tool will try to load the credentials from the file.
         :return the username and password
         """
