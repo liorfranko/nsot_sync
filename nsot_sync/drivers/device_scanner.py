@@ -227,6 +227,7 @@ class DeviceScannerDriver(BaseDriver):
                 # device['attributes']['napalm_os'] = str(napalm_os)
                 device['hostname'] = hostname
             self.devices_to_update.append(device)
+            return
             # try:
             #     # net_connect = ConnectHandler(**device_details)
             #     # hostname = get_hostname(device_details, net_connect.find_prompt() + "\n", self.logger)
