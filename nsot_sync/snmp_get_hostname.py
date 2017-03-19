@@ -2,6 +2,7 @@
 This module is used to auto-detect the hostname of a device in order to
 """
 from __future__ import unicode_literals
+
 try:
     from pysnmp.entity.rfc3413.oneliner import cmdgen
 except ImportError:
@@ -21,6 +22,8 @@ SNMP_MAPPER_BASE = {
                    "priority": 99},
     'f5_ltm': {"oid": ".1.3.6.1.2.1.1.5.0",
                "priority": 99},
+    'hp': {"oid": ".1.3.6.1.2.1.1.5.0",
+           "priority": 99},
 }
 
 
@@ -77,6 +80,7 @@ class SNMPHostnameDetect(object):
         Try to get the hostname.
 
     """
+
     def __init__(self, hostname, snmp_version="v3", snmp_port=161, community=None, user="",
                  auth_key="", encrypt_key="", auth_proto="sha", encrypt_proto="aes128"):
 
