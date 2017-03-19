@@ -82,7 +82,7 @@ class IpScannerDriver(BaseDriver):
     ]
     REACHABLE_ICMP_RESPONSES = ['1 received', '1 packets received']
 
-    def __init__(self, max_threads, scan_all, scan_all_update, *args, **kwargs):
+    def __init__(self, max_threads, scan_all, scan_all_update, scan_vlan, *args, **kwargs):
         super(IpScannerDriver, self).__init__(*args, **kwargs)
         self.site_id = self.click_ctx.obj['SITE_ID']
         self.logger = logging.getLogger(__name__)
@@ -92,18 +92,11 @@ class IpScannerDriver(BaseDriver):
         self.scan_all = scan_all
         self.scan_all_update = scan_all_update
         self.max_threads = max_threads
+        self.scan_vlan = scan_vlan
 
         try:
             self.logger.info('Getting networks for site: %s', self.site_id)
             self.networks = self.c.sites(self.site_id).networks.get()
-            # import json
-            # from pprint import pprint
-
-            # with open('/Users/liorf/Dropbox/Work/Liveperson/Code/python/nsot_networks.json') as data_file:
-            #     self.networks = json.load(data_file)
-            # pprint(self.networks)
-            # print(json.dumps(self.networks, sort_keys=True, indent=4))
-            # exit()
         except ConnectionError:
             self.click_ctx.fail('Cannot connect to NSoT server')
             raise
@@ -122,13 +115,16 @@ class IpScannerDriver(BaseDriver):
             self.logger.debug('Looping to add the scan attribute.')
             self.add_scan_to_all()
         else:
-            try:
-                self.logger.debug('Looping to scan networks.')
-                for net in self.networks:
-                    self.network_loop(net)
-            except KeyboardInterrupt:
-                self.exit_app = True
-                raise
+            if self.scan_vlan:
+                raise Exception('One vlan scan is not support yet.')
+            else:
+                try:
+                    self.logger.debug('Looping to scan networks.')
+                    for net in self.networks:
+                        self.network_loop(net)
+                except KeyboardInterrupt:
+                    self.exit_app = True
+                    raise
         return {
             'networks': self.network_to_update,
             'interfaces': [],

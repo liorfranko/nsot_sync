@@ -139,3 +139,14 @@ def find_device_in_ipam(ip, devices, logger):
             if 'address' in device['attributes']:
                 if device['attributes']['address'] == ip:
                     return device
+
+
+def convert_netmiko_os_to_napalm_os(netmiko_os):
+    if netmiko_os == 'arista_eos':
+        return 'eos'
+    elif netmiko_os == 'cisco_ios':
+        return 'ios'
+    elif netmiko_os == 'cisco_nxos':
+        return 'nxos'
+    else:
+        return 'unknown'

@@ -4,7 +4,7 @@ import time
 
 import concurrent.futures
 import ipaddress
-from netmiko import ConnectHandler
+# from netmiko import ConnectHandler
 from netmiko.snmp_autodetect import SNMPDetect
 from netmiko.ssh_exception import NetMikoTimeoutException, NetMikoAuthenticationException
 from pynsot.client import get_api_client
@@ -12,8 +12,10 @@ from pynsot.vendor.slumber.exceptions import HttpClientError
 from requests.exceptions import ConnectionError
 
 from base_driver import BaseDriver
-from nsot_sync.common import check_icmp, get_hostname, find_device_in_ipam
+from nsot_sync.common import check_icmp, get_hostname, find_device_in_ipam, convert_netmiko_os_to_napalm_os
 from nsot_sync.creds_manager import CredsManager
+from nsot_sync.snmp_get_hostname import SNMPHostnameDetect
+
 
 __author__ = 'Lior Franko'
 __maintainer__ = 'Lior Franko'
@@ -38,14 +40,14 @@ class DeviceScannerDriver(BaseDriver):
         {
             'name': 'napalm_os',
             'resource_name': 'Device',
-            'description': 'Operating System saved for napalm tools.',
+            'description': 'Operating System saved for napalm.',
             'display': True,
             'required': False,
         },
         {
             'name': 'netmiko_os',
             'resource_name': 'Device',
-            'description': 'Operating System saved for netmiko tools.',
+            'description': 'Operating System saved for netmiko.',
             'display': True,
             'required': False,
         },
@@ -53,13 +55,6 @@ class DeviceScannerDriver(BaseDriver):
             'name': 'up_time',
             'resource_name': 'Device',
             'description': 'Up time',
-            'display': True,
-            'required': False,
-        },
-        {
-            'name': 'device_type',
-            'resource_name': 'Device',
-            'description': 'Device type for netmiko client',
             'display': True,
             'required': False,
         },
@@ -189,7 +184,7 @@ class DeviceScannerDriver(BaseDriver):
                 return
             try:
                 my_snmp = SNMPDetect(hostname=str(ip), community=self.snmp_community, snmp_version=self.snmp_version)
-                device_type = my_snmp.autodetect()
+                netmiko_os = my_snmp.autodetect()
             except KeyboardInterrupt:
                 self.exit_app = True
                 raise
@@ -197,13 +192,13 @@ class DeviceScannerDriver(BaseDriver):
                 self.logger.warning('%s - Error trying to get data using SNMP\n%s', ip, e)
                 return
 
-            if not device_type:
-                self.logger.info('%s - Could not get the device type using SNMP', ip)
+            if not netmiko_os:
+                self.logger.info('%s - Could not get the netmiko_os using SNMP', ip)
                 return
-            self.logger.debug('%s - Success getting the device_type, %s', ip, device_type)
+            self.logger.debug('%s - Success getting the netmiko_os, %s', ip, netmiko_os)
 
             device_details = {
-                'device_type': device_type,
+                'device_type': netmiko_os,
                 'ip': ip,
                 'username': self.user,
                 'password': self.password,
@@ -213,8 +208,18 @@ class DeviceScannerDriver(BaseDriver):
             }
             self.logger.debug('%s - device_details is: %s', ip, device_details)
             try:
-                net_connect = ConnectHandler(**device_details)
-                hostname = get_hostname(device_details, net_connect.find_prompt() + "\n", self.logger)
+                # net_connect = ConnectHandler(**device_details)
+                # hostname = get_hostname(device_details, net_connect.find_prompt() + "\n", self.logger)
+                try:
+                    my_snmp = SNMPHostnameDetect(hostname=str(ip), community=self.snmp_community, snmp_version=self.snmp_version)
+                    hostname = my_snmp.autodetect()
+                except KeyboardInterrupt:
+                    self.exit_app = True
+                    raise
+                except Exception as e:
+                    self.logger.warning('%s - Error trying to get hostname using SNMP\n%s', ip, e)
+                    return
+
                 if not hostname:
                     self.logger.warning('%s - Error trying to get the hostname', ip)
                     return
@@ -226,23 +231,16 @@ class DeviceScannerDriver(BaseDriver):
 
                 device = find_device_in_ipam(ip, self.devices, self.logger)
                 # TODO - Add more attributes here
-                # Add napalm_os
-                if device_type == 'arista_eos':
-                    napalm_os = 'eos'
-                elif device_type == 'cisco_ios':
-                    napalm_os = 'ios'
-                elif device_type == 'cisco_nxos':
-                    napalm_os = 'nxos'
-                else:
-                    napalm_os = 'unknown'
+
+                napalm_os = convert_netmiko_os_to_napalm_os(netmiko_os)
                 if not device:
                     self.logger.info('%s - Not exist in IPAM', ip)
-                    attributes = {'address': ip, 'last_reachable': str(st), 'netmiko_os': device_type, 'hostname': str(hostname), 'napalm_os': napalm_os}
+                    attributes = {'address': ip, 'last_reachable': str(st), 'netmiko_os': netmiko_os, 'hostname': str(hostname), 'napalm_os': napalm_os}
                     device = {'hostname': str(hostname),
                               'attributes': attributes}
                 else:
                     self.logger.info('%s - Exist in IPAM', ip)
-                    device['attributes']['netmiko_os'] = device_type
+                    device['attributes']['netmiko_os'] = netmiko_os
                     device['attributes']['last_reachable'] = str(st)
                     device['attributes']['hostname'] = str(hostname)
                     device['attributes']['napalm_os'] = str(napalm_os)
