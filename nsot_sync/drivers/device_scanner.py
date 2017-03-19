@@ -6,14 +6,14 @@ import concurrent.futures
 import ipaddress
 # from netmiko import ConnectHandler
 from netmiko.snmp_autodetect import SNMPDetect
-from netmiko.ssh_exception import NetMikoTimeoutException, NetMikoAuthenticationException
+# from netmiko.ssh_exception import NetMikoTimeoutException, NetMikoAuthenticationException
 from pynsot.client import get_api_client
 from pynsot.vendor.slumber.exceptions import HttpClientError
 from requests.exceptions import ConnectionError
 
 from base_driver import BaseDriver
 from nsot_sync.common import check_icmp, find_device_in_ipam, convert_netmiko_os_to_napalm_os
-from nsot_sync.creds_manager import CredsManager
+# from nsot_sync.creds_manager import CredsManager
 from nsot_sync.snmp_get_hostname import SNMPHostnameDetect
 
 
@@ -38,16 +38,9 @@ class DeviceScannerDriver(BaseDriver):
             'required': False,
         },
         {
-            'name': 'napalm_os',
+            'name': 'os',
             'resource_name': 'Device',
-            'description': 'Operating System saved for napalm.',
-            'display': True,
-            'required': False,
-        },
-        {
-            'name': 'netmiko_os',
-            'resource_name': 'Device',
-            'description': 'Operating System saved for netmiko.',
+            'description': 'Operating System.',
             'display': True,
             'required': False,
         },
@@ -184,7 +177,7 @@ class DeviceScannerDriver(BaseDriver):
                 return
             try:
                 my_snmp = SNMPDetect(hostname=str(ip), community=self.snmp_community, snmp_version=self.snmp_version)
-                netmiko_os = my_snmp.autodetect()
+                os = my_snmp.autodetect()
             except KeyboardInterrupt:
                 self.exit_app = True
                 raise
@@ -192,10 +185,10 @@ class DeviceScannerDriver(BaseDriver):
                 self.logger.warning('%s - Error trying to get data using SNMP\n%s', ip, e)
                 return
 
-            if not netmiko_os:
-                self.logger.info('%s - Could not get the netmiko_os using SNMP', ip)
+            if not os:
+                self.logger.info('%s - Could not get the os using SNMP', ip)
                 return
-            self.logger.debug('%s - Success getting the netmiko_os, %s', ip, netmiko_os)
+            self.logger.debug('%s - Success getting the os, %s', ip, os)
             # self.logger.debug('%s - device_details is: %s', ip, device_details)
             try:
                 my_snmp = SNMPHostnameDetect(hostname=str(ip), community=self.snmp_community,
@@ -219,19 +212,19 @@ class DeviceScannerDriver(BaseDriver):
 
             device = find_device_in_ipam(ip, self.devices, self.logger)
             # TODO - Add more attributes here
-            napalm_os = convert_netmiko_os_to_napalm_os(netmiko_os)
+            # napalm_os = convert_netmiko_os_to_napalm_os(netmiko_os)
             if not device:
                 self.logger.info('%s - Not exist in IPAM', ip)
-                attributes = {'address': ip, 'last_reachable': str(st), 'netmiko_os': netmiko_os,
-                              'hostname': str(hostname), 'napalm_os': napalm_os}
+                attributes = {'address': ip, 'last_reachable': str(st), 'os': os,
+                              'hostname': str(hostname)}
                 device = {'hostname': str(hostname),
                           'attributes': attributes}
             else:
                 self.logger.info('%s - Exist in IPAM', ip)
-                device['attributes']['netmiko_os'] = netmiko_os
+                device['attributes']['os'] = os
                 device['attributes']['last_reachable'] = str(st)
                 device['attributes']['hostname'] = str(hostname)
-                device['attributes']['napalm_os'] = str(napalm_os)
+                # device['attributes']['napalm_os'] = str(napalm_os)
                 device['hostname'] = hostname
             self.devices_to_update.append(device)
             # try:
