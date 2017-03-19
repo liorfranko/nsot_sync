@@ -4,28 +4,19 @@ import time
 
 import concurrent.futures
 import ipaddress
-# from netmiko import ConnectHandler
 from netmiko.snmp_autodetect import SNMPDetect
-# from netmiko.ssh_exception import NetMikoTimeoutException, NetMikoAuthenticationException
 from pynsot.client import get_api_client
 from pynsot.vendor.slumber.exceptions import HttpClientError
 from requests.exceptions import ConnectionError
 
 from base_driver import BaseDriver
-from nsot_sync.common import check_icmp, find_device_in_ipam, convert_netmiko_os_to_napalm_os
-# from nsot_sync.creds_manager import CredsManager
+from nsot_sync.common import check_icmp, find_device_in_ipam
 from nsot_sync.snmp_get_hostname import SNMPHostnameDetect
 
 
 __author__ = 'Lior Franko'
 __maintainer__ = 'Lior Franko'
 __email__ = 'liorfranko@gmail.com'
-
-
-# TODO Add creds manager as common module.
-# TODO Move common function of the two scanners to common module.
-# TODO Support SNMP v3.
-# TODO remove SNMP and Vlan from cli options to dotfile.
 
 
 class DeviceScannerDriver(BaseDriver):
@@ -91,10 +82,7 @@ class DeviceScannerDriver(BaseDriver):
         self.scan_vlan = scan_vlan
         self.snmp_community = snmp_community
         self.snmp_version = snmp_version
-        # self.update_creds = update_creds
         self.max_threads = max_threads
-        # creds_mng = CredsManager(update_creds=self.update_creds, name=__name__)
-        # self.user, self.password = creds_mng.load_creds
         try:
             self.logger.info('Getting networks for site: %s', self.site_id)
             self.networks = self.c.sites(self.site_id).networks.get()
@@ -189,7 +177,6 @@ class DeviceScannerDriver(BaseDriver):
                 self.logger.info('%s - Could not get the os using SNMP', ip)
                 return
             self.logger.debug('%s - Success getting the os, %s', ip, os)
-            # self.logger.debug('%s - device_details is: %s', ip, device_details)
             try:
                 my_snmp = SNMPHostnameDetect(hostname=str(ip), community=self.snmp_community,
                                              snmp_version=self.snmp_version)
@@ -213,7 +200,6 @@ class DeviceScannerDriver(BaseDriver):
 
             device = find_device_in_ipam(ip, self.devices, self.logger)
             # TODO - Add more attributes here
-            # napalm_os = convert_netmiko_os_to_napalm_os(netmiko_os)
             if not device:
                 self.logger.info('%s - Not exist in IPAM', ip)
                 attributes = {'address': ip, 'last_reachable': str(st), 'os': os,
@@ -225,22 +211,6 @@ class DeviceScannerDriver(BaseDriver):
                 device['attributes']['os'] = os
                 device['attributes']['last_reachable'] = str(st)
                 device['attributes']['hostname'] = str(hostname)
-                # device['attributes']['napalm_os'] = str(napalm_os)
                 device['hostname'] = hostname
             self.devices_to_update.append(device)
             return
-            # try:
-            #     # net_connect = ConnectHandler(**device_details)
-            #     # hostname = get_hostname(device_details, net_connect.find_prompt() + "\n", self.logger)
-            #
-            # except NetMikoAuthenticationException as e:
-            #     self.logger.info('%s - Login failed, wrong username or password\n%s', ip, e)
-            # except NetMikoTimeoutException as e:
-            #     self.logger.info('%s - Login failed, TimeoutException\n%s', ip, e)
-            # except ValueError as e:
-            #     self.logger.info('%s - Login failed, ValueError\n%s', ip, e)
-            # except KeyboardInterrupt:
-            #     self.exit_app = True
-            #     raise
-            # finally:
-            #     return

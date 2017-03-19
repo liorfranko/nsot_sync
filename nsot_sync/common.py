@@ -92,39 +92,6 @@ def check_icmp(ip, logger):
         return False
 
 
-def get_hostname(device, hostname, logger):
-    """
-    This function remove from the hostname any trailing or leading characters like <, > or #
-    :param logger: The logger.
-    :param device: The device details in the Netmiko format.
-    :param hostname: The hostname returned from the Netmiko.find_prompt()
-    :return: The actual hostname, if unknown return None.
-    """
-    logger.debug('Getting the hostname of device: %s', device)
-    logger.debug('Full prompt is: %s', hostname)
-    if 'hp' in device['device_type']:
-        hostname = hostname.split('<')[1]
-        hostname = hostname.split('>')[0]
-        return hostname
-    elif 'cisco' in device['device_type']:
-        if '>' in hostname:
-            return hostname.split('>')[0]
-        else:
-            return hostname.split('#')[0]
-    elif 'eos' in device['device_type']:
-        if '>' in hostname:
-            return hostname.split('>')[0]
-        else:
-            return hostname.split('#')[0]
-    elif 'f5_ltm' in device['device_type']:
-        hostname = hostname.split('@')[1].split('(')[1].split(')')[0]
-        logger.debug('The final hostname is: %s', hostname)
-        return hostname
-    else:
-        logger.warning('device_type unknown - %s', device['device_type'])
-        return None
-
-
 def find_device_in_ipam(ip, devices, logger):
     """
     Find a device by IP address attribute in the list of devices.
@@ -139,14 +106,3 @@ def find_device_in_ipam(ip, devices, logger):
             if 'address' in device['attributes']:
                 if device['attributes']['address'] == ip:
                     return device
-
-
-def convert_netmiko_os_to_napalm_os(netmiko_os):
-    if netmiko_os == 'arista_eos':
-        return 'eos'
-    elif netmiko_os == 'cisco_ios':
-        return 'ios'
-    elif netmiko_os == 'cisco_nxos':
-        return 'nxos'
-    else:
-        return 'unknown'
