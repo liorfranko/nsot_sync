@@ -74,7 +74,7 @@ class SNMPHostnameDetect(object):
     Methods
     -------
     autodetect()
-        Try to determine the device type.
+        Try to get the hostname.
 
     """
     def __init__(self, hostname, snmp_version="v3", snmp_port=161, community=None, user="",
@@ -194,7 +194,7 @@ class SNMPHostnameDetect(object):
         snmp_mapper_list.reverse()
 
         for entry in snmp_mapper_list:
-            for device_type, v in entry.items():
+            for device, v in entry.items():
                 oid = v['oid']
 
             # Used cache data if we already queryied this OID
@@ -206,5 +206,5 @@ class SNMPHostnameDetect(object):
 
             # See if we had a match
             if snmp_response:
-                return snmp_response
+                return snmp_response.split('.')[0]
         return None
