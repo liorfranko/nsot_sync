@@ -30,21 +30,21 @@ from nsot_sync.drivers import device_scanner
     required=True,
     help='The SNMP version for auto discovery, option are: \'v1\', \'v2c\', \'v3\''
 )
-@click.option(
-    '--update-creds',
-    is_flag=True,
-    default=False,
-    help='Update the exiting cached credentials.'
-)
+# @click.option(
+#     '--update-creds',
+#     is_flag=True,
+#     default=False,
+#     help='Update the exiting cached credentials.'
+# )
 @click.pass_context
-def cli(ctx, max_threads, scan_vlan, snmp_community, snmp_version, update_creds):
+def cli(ctx, max_threads, scan_vlan, snmp_community, snmp_version):
     driver = device_scanner.DeviceScannerDriver(
         click_ctx=ctx,
         max_threads=max_threads,
         scan_vlan=scan_vlan,
         snmp_community=snmp_community,
         snmp_version=snmp_version,
-        update_creds=update_creds
+        # update_creds=update_creds
     )
     if ctx.obj['NOOP']:
         driver.noop()

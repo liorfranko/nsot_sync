@@ -12,7 +12,7 @@ from pynsot.vendor.slumber.exceptions import HttpClientError
 from requests.exceptions import ConnectionError
 
 from base_driver import BaseDriver
-from nsot_sync.common import check_icmp, get_hostname, find_device_in_ipam, convert_netmiko_os_to_napalm_os
+from nsot_sync.common import check_icmp, find_device_in_ipam, convert_netmiko_os_to_napalm_os
 from nsot_sync.creds_manager import CredsManager
 from nsot_sync.snmp_get_hostname import SNMPHostnameDetect
 
@@ -88,7 +88,7 @@ class DeviceScannerDriver(BaseDriver):
         },
     ]
 
-    def __init__(self, max_threads, scan_vlan, snmp_community, snmp_version, update_creds, *args, **kwargs):
+    def __init__(self, max_threads, scan_vlan, snmp_community, snmp_version, *args, **kwargs):
         super(DeviceScannerDriver, self).__init__(*args, **kwargs)
         self.site_id = self.click_ctx.obj['SITE_ID']
         self.logger = logging.getLogger(__name__)
@@ -98,10 +98,10 @@ class DeviceScannerDriver(BaseDriver):
         self.scan_vlan = scan_vlan
         self.snmp_community = snmp_community
         self.snmp_version = snmp_version
-        self.update_creds = update_creds
+        # self.update_creds = update_creds
         self.max_threads = max_threads
-        creds_mng = CredsManager(update_creds=self.update_creds, name=__name__)
-        self.user, self.password = creds_mng.load_creds
+        # creds_mng = CredsManager(update_creds=self.update_creds, name=__name__)
+        # self.user, self.password = creds_mng.load_creds
         try:
             self.logger.info('Getting networks for site: %s', self.site_id)
             self.networks = self.c.sites(self.site_id).networks.get()
@@ -196,64 +196,56 @@ class DeviceScannerDriver(BaseDriver):
                 self.logger.info('%s - Could not get the netmiko_os using SNMP', ip)
                 return
             self.logger.debug('%s - Success getting the netmiko_os, %s', ip, netmiko_os)
-
-            device_details = {
-                'device_type': netmiko_os,
-                'ip': ip,
-                'username': self.user,
-                'password': self.password,
-                'secret': 'secret',
-                'verbose': False,
-                'global_delay_factor': 2,
-            }
-            self.logger.debug('%s - device_details is: %s', ip, device_details)
+            # self.logger.debug('%s - device_details is: %s', ip, device_details)
             try:
-                # net_connect = ConnectHandler(**device_details)
-                # hostname = get_hostname(device_details, net_connect.find_prompt() + "\n", self.logger)
-                try:
-                    my_snmp = SNMPHostnameDetect(hostname=str(ip), community=self.snmp_community, snmp_version=self.snmp_version)
-                    hostname = my_snmp.autodetect()
-                except KeyboardInterrupt:
-                    self.exit_app = True
-                    raise
-                except Exception as e:
-                    self.logger.warning('%s - Error trying to get hostname using SNMP\n%s', ip, e)
-                    return
-
-                if not hostname:
-                    self.logger.warning('%s - Error trying to get the hostname', ip)
-                    return
-                self.logger.debug('%s - Success getting the hostname, %s', ip, hostname)
-
-                ts = time.time()
-                st = datetime.datetime.fromtimestamp(ts).strftime('%b %d %H:%M:%S')
-                self.logger.debug('%s - The time stamp is %s', ip, st)
-
-                device = find_device_in_ipam(ip, self.devices, self.logger)
-                # TODO - Add more attributes here
-
-                napalm_os = convert_netmiko_os_to_napalm_os(netmiko_os)
-                if not device:
-                    self.logger.info('%s - Not exist in IPAM', ip)
-                    attributes = {'address': ip, 'last_reachable': str(st), 'netmiko_os': netmiko_os, 'hostname': str(hostname), 'napalm_os': napalm_os}
-                    device = {'hostname': str(hostname),
-                              'attributes': attributes}
-                else:
-                    self.logger.info('%s - Exist in IPAM', ip)
-                    device['attributes']['netmiko_os'] = netmiko_os
-                    device['attributes']['last_reachable'] = str(st)
-                    device['attributes']['hostname'] = str(hostname)
-                    device['attributes']['napalm_os'] = str(napalm_os)
-                    device['hostname'] = hostname
-                self.devices_to_update.append(device)
-            except NetMikoAuthenticationException as e:
-                self.logger.info('%s - Login failed, wrong username or password\n%s', ip, e)
-            except NetMikoTimeoutException as e:
-                self.logger.info('%s - Login failed, TimeoutException\n%s', ip, e)
-            except ValueError as e:
-                self.logger.info('%s - Login failed, ValueError\n%s', ip, e)
+                my_snmp = SNMPHostnameDetect(hostname=str(ip), community=self.snmp_community,
+                                             snmp_version=self.snmp_version)
+                hostname = my_snmp.autodetect()
             except KeyboardInterrupt:
                 self.exit_app = True
                 raise
-            finally:
+            except Exception as e:
+                self.logger.warning('%s - Error trying to get hostname using SNMP\n%s', ip, e)
                 return
+
+            if not hostname:
+                self.logger.warning('%s - Error trying to get the hostname', ip)
+                return
+            self.logger.debug('%s - Success getting the hostname, %s', ip, hostname)
+
+            ts = time.time()
+            st = datetime.datetime.fromtimestamp(ts).strftime('%b %d %H:%M:%S')
+            self.logger.debug('%s - The time stamp is %s', ip, st)
+
+            device = find_device_in_ipam(ip, self.devices, self.logger)
+            # TODO - Add more attributes here
+            napalm_os = convert_netmiko_os_to_napalm_os(netmiko_os)
+            if not device:
+                self.logger.info('%s - Not exist in IPAM', ip)
+                attributes = {'address': ip, 'last_reachable': str(st), 'netmiko_os': netmiko_os,
+                              'hostname': str(hostname), 'napalm_os': napalm_os}
+                device = {'hostname': str(hostname),
+                          'attributes': attributes}
+            else:
+                self.logger.info('%s - Exist in IPAM', ip)
+                device['attributes']['netmiko_os'] = netmiko_os
+                device['attributes']['last_reachable'] = str(st)
+                device['attributes']['hostname'] = str(hostname)
+                device['attributes']['napalm_os'] = str(napalm_os)
+                device['hostname'] = hostname
+            self.devices_to_update.append(device)
+            # try:
+            #     # net_connect = ConnectHandler(**device_details)
+            #     # hostname = get_hostname(device_details, net_connect.find_prompt() + "\n", self.logger)
+            #
+            # except NetMikoAuthenticationException as e:
+            #     self.logger.info('%s - Login failed, wrong username or password\n%s', ip, e)
+            # except NetMikoTimeoutException as e:
+            #     self.logger.info('%s - Login failed, TimeoutException\n%s', ip, e)
+            # except ValueError as e:
+            #     self.logger.info('%s - Login failed, ValueError\n%s', ip, e)
+            # except KeyboardInterrupt:
+            #     self.exit_app = True
+            #     raise
+            # finally:
+            #     return
