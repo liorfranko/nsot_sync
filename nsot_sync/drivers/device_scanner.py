@@ -17,6 +17,7 @@ from nsot_sync.snmp_get_hostname import SNMPHostnameDetect
 __author__ = 'Lior Franko'
 __maintainer__ = 'Lior Franko'
 __email__ = 'liorfranko@gmail.com'
+# TODO Add support of SNMP v3
 
 
 class DeviceScannerDriver(BaseDriver):
@@ -178,8 +179,7 @@ class DeviceScannerDriver(BaseDriver):
                 return
             self.logger.debug('%s - Success getting the os, %s', ip, os)
             try:
-                my_snmp = SNMPHostnameDetect(hostname=str(ip), community=self.snmp_community,
-                                             snmp_version=self.snmp_version)
+                my_snmp = SNMPHostnameDetect(hostname=str(ip), community=self.snmp_community, snmp_version=self.snmp_version)
                 hostname = my_snmp.autodetect()
                 print (hostname)
             except KeyboardInterrupt:
