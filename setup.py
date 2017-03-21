@@ -18,7 +18,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'pynsot==1.0',
+        'pynsot>=1.1.3',
         'netifaces==0.10.4',
         'coloredlogs==5.0',
         'futures==3.0.5',
