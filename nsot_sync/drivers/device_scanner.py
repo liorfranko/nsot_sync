@@ -181,7 +181,6 @@ class DeviceScannerDriver(BaseDriver):
             try:
                 my_snmp = SNMPHostnameDetect(hostname=str(ip), community=self.snmp_community, snmp_version=self.snmp_version)
                 hostname = my_snmp.autodetect()
-                print (hostname)
             except KeyboardInterrupt:
                 self.exit_app = True
                 raise
